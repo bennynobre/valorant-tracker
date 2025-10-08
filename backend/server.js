@@ -60,5 +60,24 @@ app.get('/api/matches/:region/:name/:tag', async (req, res) => {
   }
 });
 
+app.get('/api/esports/schedule', async (req, res) => {
+  try {
+    const data = await henrikGet('/v1/esports/schedule');
+    res.json(data);
+  } catch (err) {
+    res.status(err?.response?.status || 500).json({ error: err?.message });
+  }
+})
+
+app.get('/api/content', async (req, res) => {
+  try {
+    const data = await henrikGet(`/v1/content`); 
+    res.json(data);
+  } catch (err) {
+    console.error("ERRO AO BUSCAR NA API EXTERNA:", err.response?.data || err.message);
+    res.status(err?.response?.status || 500).json({ error: err?.message });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Backend listening on ${PORT}`));
