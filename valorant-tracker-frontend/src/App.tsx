@@ -1,16 +1,33 @@
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlayerPage from './pages/PlayerPage';
-import './App.css';
+import TermsPage from './pages/TermsPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { GlobalStyle } from './styles/globalStyles';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      
-      {/* Mude esta linha */}
-      <Route path="/player" element={<PlayerPage />} />
-    </Routes>
+    <>
+      <GlobalStyle />
+      <Routes>
+        <Route path="/terms" element={<TermsPage />} />
+
+        <Route 
+          path="/" 
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } />      
+        <Route 
+          path="/player" 
+          element={
+              <ProtectedRoute>
+                <PlayerPage />
+              </ProtectedRoute>
+          } />
+      </Routes>
+    </>
   );
 }
 
