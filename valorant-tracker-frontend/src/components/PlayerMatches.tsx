@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   MatchesContainer,
   MatchCard,
@@ -5,6 +6,7 @@ import {
   MatchInfo,
   MatchKDA,
 } from '../styles/PlayerMatches.styles';
+import MatchDetailModal from './MatchDetailModal';
 
 interface CharacterData { iconUrl: string; }
 interface MapData { imageUrl: string; }
@@ -34,8 +36,12 @@ interface PlayerMatchesProps {
   mapMap: Map<string, MapData>;
 }
 
+
 const PlayerMatches: React.FC<PlayerMatchesProps> = ({ data, playerName, playerTag, characterMap, mapMap }) => {
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+
   return (
+    <>
     <MatchesContainer className="card">
       <h2>Últimas Partidas</h2>
       <div>
@@ -55,7 +61,13 @@ const PlayerMatches: React.FC<PlayerMatchesProps> = ({ data, playerName, playerT
           const mapImageUrl = mapMap.get(match.metadata.map)?.imageUrl;
 
           return (
-            <MatchCard key={match.metadata.matchid} className={matchResultClass} mapImageUrl={mapImageUrl}>
+            <MatchCard 
+              key={match.metadata.matchid} 
+              className={matchResultClass} 
+              mapImageUrl={mapImageUrl}
+              onClick={() => setSelectedMatch(match)}
+              style={{ cursor: 'pointer' }}
+            >
               {agentIconUrl && <AgentIcon src={agentIconUrl} alt={ourPlayer.character} />}
               <MatchInfo>
                 <h4>{match.metadata.map}</h4>
@@ -70,6 +82,16 @@ const PlayerMatches: React.FC<PlayerMatchesProps> = ({ data, playerName, playerT
         })}
       </div>
     </MatchesContainer>
+    {selectedMatch && (
+      <MatchDetailModal
+        match={selectedMatch}
+        agentMap={characterMap}
+        onClose={() => setSelectedMatch(null)}
+        playerName={playerName}
+        playerTag={playerTag}
+      />
+    )}
+    </>
   );
 };
 
