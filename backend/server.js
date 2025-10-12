@@ -79,5 +79,18 @@ app.get('/api/content', async (req, res) => {
   }
 });
 
+app.get('/api/matches/by-puuid/:region/:platform/:puuid', async (req, res) => {
+  try {
+    const { region, platform, puuid } = req.params;
+    
+    const data = await henrikGet(`/v4/by-puuid/matches/${region}/${platform}/${puuid}?size=100`);
+
+    res.json(data);
+  } catch (err) {
+    console.error("ERRO NO BACKEND AO BUSCAR HISTÓRICO POR PUUID (v4):", err.response?.data || err.message);
+    res.status(err?.response?.status || 500).json({ error: err?.message });
+  }
+});
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Backend listening on ${PORT}`));
