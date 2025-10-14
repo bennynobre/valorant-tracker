@@ -62,12 +62,18 @@ app.get('/api/matches/:region/:name/:tag', async (req, res) => {
 
 app.get('/api/esports/schedule', async (req, res) => {
   try {
-    const data = await henrikGet('/v1/esports/schedule');
+    const { league } = req.query;
+    let path = '/v1/esports/schedule';
+    if (league) {
+      path += `?league=${league}`;
+    }
+
+    const data = await henrikGet(path);
     res.json(data);
   } catch (err) {
     res.status(err?.response?.status || 500).json({ error: err?.message });
   }
-})
+});
 
 app.get('/api/content', async (req, res) => {
   try {
