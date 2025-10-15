@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlayerPage from './pages/PlayerPage';
 import TermsPage from './pages/TermsPage';
+import EsportsPage from './pages/EsportsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { GlobalStyle } from './styles/globalStyles';
 
@@ -11,6 +12,12 @@ function App() {
       <GlobalStyle />
       <Routes>
         <Route path="/terms" element={<TermsPage />} />
+
+        <Route path="/esports" element={
+          <ProtectedRoute>
+            <EsportsPage />
+          </ProtectedRoute>
+          } />
 
         <Route 
           path="/" 
