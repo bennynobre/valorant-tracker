@@ -38,8 +38,8 @@ export const ModalContent = styled.div`
   background-color: #1a1a2e;
   border: 1px solid #4a4a68;
   border-radius: 12px;
-  width: 90%;
-  max-width: 1100px;
+  width: 95%;
+  max-width: 1000px;
   max-height: 90vh;
   overflow-y: auto;
   animation: ${slideIn} 0.4s ease-out;
@@ -71,15 +71,16 @@ export const CloseButton = styled.button`
 
 export const TeamsContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  padding: 2rem 2.5rem;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding: 1.5rem 2.5rem;
 `;
 
 export const TeamTable = styled.div`
   h4 {
     margin-top: 0;
     color: #e94560;
+    font-size: 1.2rem;
   }
 `;
 
@@ -91,31 +92,87 @@ export const RankNumber = styled.span`
   text-align: center;
 `;
 
-export const PlayerRow = styled.div`
+interface PlayerRowProps {
+  teamColor? : 'Red' | 'Blue';
+}
+
+export const PlayerRow = styled.div<PlayerRowProps>`
+  display: grid;
+  grid-template-columns: 30px 40px 1fr repeat(5, 65px) 90px;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 1px solid #2a2a48;
+  transition: background-color 0.3s ease;
+
+  background: ${props =>
+    props.teamColor === 'Blue'
+      ? 'linear-gradient(to right, rgba(88, 145, 255, 0.15), transparent 70%)'
+      : props.teamColor === 'Red'
+      ? 'linear-gradient(to right, rgba(255, 70, 86, 0.15), transparent 70%)'
+      : 'transparent'
+  };
+`;
+
+export const TableHeader = styled(PlayerRow)`
+  font-size: 0.7rem;
+  font-weight: bold;
+  opacity: 0.6;
+  border-bottom: 2px solid #4a4a68;
+  padding-bottom: 0.75rem;
+
+  & > span {
+    text-align: center;
+  }
+`;
+
+export const MainRow = styled.div`
   display: grid;
   grid-template-columns: 30px auto 1fr auto;
   gap: 1.5rem;
   align-items: center;
-  padding: 0.5rem 0;
-  
-  &:not(:last-child) {
-    border-bottom: 1px solid #2a2a48;
+  width: 100%;
+`;
+
+export const AdvancedStats = styled.div`
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  padding: 0.75rem 0 0.25rem 45px;
+  font-size: 0.8rem;
+  text-align: center;
+`;
+
+export const StatBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1rem;
+
+  small {
+    font-size: 0.7rem;
+    font-weight: normal;
+    opacity: 0.7;
+    margin-top: 2px;
   }
 `;
 
 export const AgentIcon = styled.img`
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
 `;
 
 export const PlayerName = styled.span`
   font-weight: bold;
+  font-size: 1rem;
 `;
 
 export const PlayerKDA = styled.span`
   font-family: monospace;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  text-align: right;
 `;
 
 export const Badge = styled.span`
