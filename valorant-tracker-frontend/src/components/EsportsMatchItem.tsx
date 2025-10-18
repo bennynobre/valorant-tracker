@@ -4,7 +4,7 @@ import {
   MatchCard,
   MatchHeader,
   LeagueIcon,
-  MatchBody,
+  CardBody,
   Team,
   MatchDetails,
 } from '../styles/EsportsMatchItem.styles';
@@ -28,6 +28,7 @@ interface EsportsMatch {
 
 interface EsportsMatchItemProps {
     match: EsportsMatch;
+    isLive?: boolean;
 }
 
 const EsportsMatchItem: React.FC<EsportsMatchItemProps> = ({ match }) => {
@@ -46,7 +47,7 @@ const EsportsMatchItem: React.FC<EsportsMatchItemProps> = ({ match }) => {
         <LeagueIcon src={match.league.icon} alt={match.league.name} />
         <span>{match.league.name}</span>
       </MatchHeader>
-      <MatchBody>
+      <CardBody>
         <Team>
           <img src={teamA.icon} alt={teamA.name} />
           <span>{teamA.code}</span>
@@ -59,7 +60,7 @@ const EsportsMatchItem: React.FC<EsportsMatchItemProps> = ({ match }) => {
           <img src={teamB.icon} alt={teamB.name} />
           <span>{teamB.code}</span>
         </Team>
-      </MatchBody>
+      </CardBody>
     </MatchCard>
     );
 };

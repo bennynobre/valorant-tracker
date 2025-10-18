@@ -33,7 +33,6 @@ const PlayerMatches: React.FC<PlayerMatchesProps> = ({ data, playerName, playerT
 
             if (!ourPlayer || !ourPlayer.stats) return null;
 
-            //CÁLCULO DE RANKING E MVP
             const rankedPlayers = [...match.players.all_players].sort((a, b) => {
               const scoreA = a.stats?.score ?? 0;
               const scoreB = b.stats?.score ?? 0;

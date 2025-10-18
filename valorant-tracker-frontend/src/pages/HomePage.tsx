@@ -1,45 +1,33 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import EsportsMatchItem from '../components/EsportsMatchItem';
-
-import {
-  HomeHeader,
-  HeaderContainer,
-  SearchForm,
-  EsportsSection,
-  Filters,
-  MatchesGrid,
-} from '../styles/HomePage.styles';
-import { Container } from '../styles/common';
+import { HomeHeader, HeaderContainer, NavLink, SearchForm, EsportsSection, MatchesGrid, DateGroup, DateHeader } from '../styles/HomePage.styles';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-function HomePage() {
+const isSameUTCDate = (d1: Date, d2: Date) => {
+  return d1.getUTCFullYear() === d2.getUTCFullYear() &&
+    d1.getUTCMonth() === d2.getUTCMonth() &&
+    d1.getUTCDate() === d2.getUTCDate();
+};
 
-  // State to player search
-  const [name, setName] = useState('curry');
-  const [tag, setTag] = useState('0406');
+function HomePage() {
+  const [name, setName] = useState('');
+  const [tag, setTag] = useState('');
   const [playerRegion, setPlayerRegion] = useState('na');
   const navigate = useNavigate();
 
-  // State to esports matches
   const [matches, setMatches] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Esports Filter
-  const [selectedRegion, setSelectedRegion] = useState('international');
-  const [selectedLeague, setSelectedLeague] = useState('all');
-
-  const handlePlayerSearch = (e: FormEvent) => {
+  const handlePlayerSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !tag) {
-      alert('Por favor, preencha todos os campos.');
+      alert('Por favor, preencha o nome e a tag do jogador.');
       return;
     }
-
     navigate(`/player?region=${playerRegion}&name=${name}&tag=${tag}`);
   };
 
@@ -48,10 +36,9 @@ function HomePage() {
       try {
         setLoading(true);
         const response = await axios.get(`${API_BASE_URL}/esports/schedule`);
-        const upcomingMatches = response.data.data.filter((match: any) => match.state === 'unstarted');
-        setMatches(upcomingMatches);
+        setMatches(response.data.data || []);
       } catch (err) {
-        setError('Não foi possível carregar os próximos jogos.');
+        setError('Não foi possível carregar a agenda de esports.');
         console.error(err);
       } finally {
         setLoading(false);
@@ -60,19 +47,42 @@ function HomePage() {
     fetchEsportsSchedule();
   }, []);
 
-  const filteredMatches = useMemo(() => {
-    return matches.filter(match => {
-      const regionMatch = selectedRegion === 'all' || match.league.region.toLowerCase() === selectedRegion;
-      const leagueMatch = selectedLeague === 'all' || match.league.name.toLowerCase().includes(selectedLeague.toLowerCase());
-      return regionMatch && leagueMatch;
-    });
-  }, [matches, selectedRegion, selectedLeague]);
+  const categorizedMatches = useMemo(() => {
+    const liveMatches: any[] = [];
+    const todayMatches: any[] = [];
+    const tomorrowMatches: any[] = [];
+    const upcomingMatches: any[] = [];
 
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const tomorrowUTC = new Date(todayUTC);
+    tomorrowUTC.setUTCDate(tomorrowUTC.getUTCDate() + 1);
+
+    const futureMatches = matches.filter(match => match.state === 'unstarted' || match.state === 'in_progress');
+
+    for (const match of futureMatches) {
+      const matchDate = new Date(match.date);
+
+      if (match.state === 'in_progress') {
+        liveMatches.push(match);
+      } else if (isSameUTCDate(matchDate, todayUTC)) {
+        todayMatches.push(match);
+      } else if (isSameUTCDate(matchDate, tomorrowUTC)) {
+        tomorrowMatches.push(match);
+      } else {
+        upcomingMatches.push(match);
+      }
+    }
+    return { liveMatches, todayMatches, tomorrowMatches, upcomingMatches };
+  }, [matches]);
+  
   return (
-     <>
+
+      <>
       <HomeHeader>
         <HeaderContainer>
           <h1>Valorant Tracker</h1>
+
           <SearchForm onSubmit={handlePlayerSearch}>
             <select value={playerRegion} onChange={(e) => setPlayerRegion(e.target.value)}>
               <option value="br">BR</option>
@@ -80,43 +90,64 @@ function HomePage() {
               <option value="eu">EU</option>
             </select>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome de usuário" />
-            <span>#</span>
-            <input type="text" value={tag} onChange={(e) => setTag(e.target.value)} placeholder="Tag" className="tag-input" />
+            <input type="text" value={tag} onChange={(e) => setTag(e.target.value)} placeholder="# Tag" className="tag-input" />
             <button type="submit">Buscar</button>
           </SearchForm>
 
+          <NavLink to="/esports">Resultados Esports</NavLink>
         </HeaderContainer>
       </HomeHeader>
 
-      <main>
-        <Container>
-          <EsportsSection>
-            <h2>Próximas Partidas Tier 1</h2>
-            <Filters>
-              <select value={selectedRegion} onChange={(e) => setSelectedRegion(e.target.value)}>
-                <option value="all">Todas as Regiões</option>
-                <option value="international">Internacional</option>
-                <option value="north america">América do Norte</option>
-                <option value="emea">EMEA</option>
-                <option value="brazil">Brasil</option>
-                <option value="korea">Coreia</option>
-                <option value="japan">Japão</option>
-              </select>
-            </Filters>
-                        {!loading && !error && (
-              <MatchesGrid>
-                {filteredMatches.length > 0 ? (
-                  filteredMatches.map(match => (
-                    <EsportsMatchItem key={match.match.id} match={match} />
-                  ))
-                ) : (
-                  <p>Nenhuma partida encontrada com os filtros selecionados.</p>
-                )}
-              </MatchesGrid>
-            )}
+      <main className="container">
+        <EsportsSection>
+          {loading && <p>Carregando partidas...</p>}
+          {error && <p className="error">{error}</p>}
+          
+          {!loading && !error && (
+            <>
+             <DateGroup>
+                  <DateHeader isLive={categorizedMatches.liveMatches.length > 0}>AO VIVO AGORA</DateHeader>
+                  {categorizedMatches.liveMatches.length > 0 ? (
+                    <MatchesGrid>
+                      {categorizedMatches.liveMatches
+                        .filter(match => match.match?.id) 
+                        .map(match => (
+                          <EsportsMatchItem key={match.match.id} match={match} isLive={true} />
+                        ))}
+                    </MatchesGrid>
+                  ) : (
+                    <p style={{ opacity: 0.7, textAlign: 'center' }}>Sem partidas ao vivo no momento.</p>
+                  )}
+                </DateGroup>
 
-          </EsportsSection>
-        </Container>
+              {categorizedMatches.todayMatches.length > 0 && (
+                <DateGroup>
+                  <DateHeader>HOJE, {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</DateHeader>
+                  <MatchesGrid>
+                      {categorizedMatches.todayMatches
+                        .filter(match => match.match?.id)
+                        .map(match => (
+                          <EsportsMatchItem key={match.match.id} match={match} />
+                        ))}
+                    </MatchesGrid>
+                </DateGroup>
+              )}
+
+              {categorizedMatches.tomorrowMatches.length > 0 && (
+                <DateGroup>
+                  <DateHeader>AMANHÃ, {new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</DateHeader>
+                  <MatchesGrid>
+                      {categorizedMatches.tomorrowMatches
+                        .filter(match => match.match?.id)
+                        .map(match => (
+                          <EsportsMatchItem key={match.match.id} match={match} />
+                        ))}
+                    </MatchesGrid>
+                </DateGroup>
+              )}
+            </>
+          )}
+        </EsportsSection>
       </main>
     </>
   );

@@ -1,16 +1,32 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const MatchCard = styled.div`
+export const LiveBadge = styled.span`
+  background-color: #ff4656;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
+`;
+
+export const MatchCard = styled.div<{ isLive?: boolean }>`
+  display: flex;
+  flex-direction: column;
   background-color: #16213e;
-  border: 1px solid #4a4a68;
-  border-radius: 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2a48;
   overflow: hidden;
-  transition: transform 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 
   &:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     border-color: #e94560;
   }
+
+  ${props => props.isLive && css`
+    border-color: #ff4656;
+    box-shadow: 0 0 15px rgba(255, 70, 86, 0.5);
+  `}
 `;
 
 export const MatchHeader = styled.div`
@@ -28,44 +44,48 @@ export const LeagueIcon = styled.img`
   height: 24px;
 `;
 
-export const MatchBody = styled.div`
-  display: flex;
+export const CardBody = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+  gap: 1rem;
+  padding: 1.5rem;
 `;
 
 export const Team = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  width: 80px;
-  
+  gap: 0.75rem;
+
   img {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: contain;
   }
-  
+
   span {
     font-weight: bold;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 `;
 
 export const MatchDetails = styled.div`
-  text-align: center;
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
   span {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: bold;
     color: #e94560;
+    text-transform: uppercase;
   }
-  
+
   p {
     margin: 0.25rem 0 0 0;
-    font-size: 0.9rem;
+    font-size: 1rem;
     opacity: 0.8;
   }
 `;
