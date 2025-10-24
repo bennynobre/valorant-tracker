@@ -1,6 +1,6 @@
 # Valorant Tracker 🎮📊
 
-Um tracker de estatísticas e resultados de esports para Valorant, construído com React, Node.js e TypeScript. Este projeto nasceu de conversas com amigos jogadores e foi desenvolvido como um projeto de aprendizado e demonstração de habilidades full-stack.
+Um tracker de estatísticas e resultados de esports para Valorant, construído com React, Node.js e TypeScript. A ideia nasceu de conversas com amigos que, como eu, são apaixonados por Valorant. Discutimos o que gostaríamos de ver em um tracker ideal, e essas ideias se tornaram a base das funcionalidades que implementei.
 
 [![Status do Deploy - Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=valorant-tracker)](https://valorant-tracker-beta.vercel.app/)
 
